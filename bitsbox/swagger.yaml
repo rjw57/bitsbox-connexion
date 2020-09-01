@@ -1,0 +1,88 @@
+openapi: "3.0.3"
+
+info:
+  version: v1alpha
+  title: Bitsbox
+  license:
+    name: MIT
+
+servers:
+  - url: https://api.bitsbox.richwareham.uk/
+
+paths:
+  /bits:
+    get:
+      summary: List all bits
+      tags:
+        - bits
+      parameters:
+        - name: pageSize
+          in: query
+          description: How many to return in one page (1-1000 inclusive)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1000
+            default: 200
+      responses:
+        '200':
+          description: A paged list of bits
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BitList"
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Bit:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
+        name:
+          type: string
+          example: "Frobnicator 3000"
+        codes:
+          type: array
+          items:
+            type: string
+          example: ["FROB45", "FROBP-345"]
+    BitList:
+      type: object
+      required:
+        - results
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Bit"
+        next:
+          type: string
+          format: uri
+          example: "https://example.com/bits/?page=4"
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              example: "Bad Request"

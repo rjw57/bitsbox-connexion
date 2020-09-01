@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    entrypoint: ['python', '-m', 'app']
+
+    environment:
+      DEBUG: "1"
+
+    volumes:
+      #- './:/usr/src/app:ro'
+      - './:/usr/src/app'
